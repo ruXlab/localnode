@@ -1,0 +1,16 @@
+<configuration>
+    <!-- Define the root logger level and appender -->
+    <root level="INFO">
+        <appender-ref ref="console" />
+    </root>
+
+    <!-- Define the console appender -->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36}: %msg%n</pattern>
+        </encoder>
+    </appender>
+    <!--    <logger name="org.apache.http.wire" level="OFF" />-->
+
+    <logger name="vc.rux.pokefork" level="DEBUG" />
+</configuration>

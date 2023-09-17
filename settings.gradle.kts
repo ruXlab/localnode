@@ -18,6 +18,7 @@ dependencyResolutionManagement {
     }
     versionCatalogs {
         create("libs") {
+            version("web3j", "5.0.0")
 
             library("dockerjava", "com.github.docker-java:docker-java:3.3.3")
 
@@ -25,8 +26,18 @@ dependencyResolutionManagement {
             library("logback-classic", "ch.qos.logback:logback-classic:1.2.6")
             bundle("logging", listOf("slf4j-api", "logback-classic"))
 
+            library("web3j", "org.web3j", "core").versionRef("web3j")
+
         }
         create("testlibs") {
+            version("junit", "5.10.0")
+            
+            library("assertk", "com.willowtreeapps.assertk:assertk:0.27.0")
+
+            library("junit-bom", "org.junit", "junit-bom").versionRef("junit")
+            library("junit-api", "org.junit.jupiter", "junit-jupiter-api").versionRef("junit")
+            library("junit-engine", "org.junit.jupiter", "junit-jupiter-engine").versionRef("junit")
         }
     }
 }
+include("web3j")
