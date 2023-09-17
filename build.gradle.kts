@@ -4,13 +4,15 @@ plugins {
 }
 
 group = "vc.rux.pokefork"
-version = "1.0-SNAPSHOT"
+version = "0.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
+    implementation(libs.dockerjava)
+    implementation(libs.bundles.logging)
     testImplementation(kotlin("test"))
 }
 
@@ -19,7 +21,7 @@ tasks.test {
 }
 
 kotlin {
-    jvmToolchain(8)
+    jvmToolchain(11)
 }
 
 application {
