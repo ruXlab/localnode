@@ -1,3 +1,5 @@
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
 plugins {
     kotlin("jvm") 
 }
@@ -21,6 +23,12 @@ dependencies {
     testImplementation(testlibs.assertk)
 }
 
+
 tasks.test {
     useJUnitPlatform()
+    testLogging {
+        events = mutableSetOf(
+            TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED
+        )
+    }
 }
