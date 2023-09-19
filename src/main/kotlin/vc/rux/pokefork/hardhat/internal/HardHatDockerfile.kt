@@ -6,6 +6,7 @@ import java.util.Base64
 internal class HardHatDockerfile(
     val jsConfigJs: HardHatConfigJs,
     val hardhatVersion: String,
+    val commandLineParams: List<String>,
     val baseImage: String = "node:16-alpine"
 ) {
     fun toDockerfileContent(): String {
@@ -30,7 +31,7 @@ internal class HardHatDockerfile(
             RUN yarn add hardhat@$hardhatVersion --non-interactive --frozen-lockfile
 
 
-            ENTRYPOINT ["npx", "hardhat", "node"]
+            ENTRYPOINT [${commandLineParams.joinToString(",") { "\"$it\"" }}]
         """.trimIndent()
     }
 }

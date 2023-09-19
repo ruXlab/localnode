@@ -3,7 +3,7 @@ package vc.rux.pokefork.hardhat.internal
 import com.fasterxml.jackson.databind.ObjectMapper
 
 internal class HardHatConfigJs(
-    private val chainId: Int = 31337,
+    private val chainId: Long = 31337,
     private val blockNumber: Long? = null
 ) {
     /**

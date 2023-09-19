@@ -37,6 +37,7 @@ dependencyResolutionManagement {
             library("junit-bom", "org.junit", "junit-bom").versionRef("junit")
             library("junit-api", "org.junit.jupiter", "junit-jupiter-api").versionRef("junit")
             library("junit-engine", "org.junit.jupiter", "junit-jupiter-engine").versionRef("junit")
+            library("junit-params", "org.junit.jupiter", "junit-jupiter-params").versionRef("junit")
         }
     }
 }

@@ -20,3 +20,13 @@ internal fun Response<*>.throwIfErrored() {
         throw PokeForkRpcCallError(error)
     }
 }
+internal fun Response<*>.throwIfResultIsNotTrue() {
+    if (result != "true") {
+        throw PokeForkError("No errors were reported but server returned '$result' instead of expected 'true'")
+    }
+}
+
+internal fun Response<*>.throwIfErroredOrResultIsNotTrue() {
+    throwIfErrored()
+    throwIfResultIsNotTrue()
+}

@@ -1,20 +1,12 @@
 package vc.rux.pokefork
 
-import com.github.dockerjava.api.DockerClient
-import com.github.dockerjava.api.command.CreateContainerResponse
-import com.github.dockerjava.api.model.HostConfig
-import com.github.dockerjava.api.model.PortBinding
-import com.github.dockerjava.core.DockerClientBuilder
-import com.github.dockerjava.core.command.PullImageResultCallback
-import com.github.dockerjava.api.command.CreateContainerCmd
-import vc.rux.pokefork.hardhat.HardHatForkConfig
-import vc.rux.pokefork.hardhat.HardhatFork
+import vc.rux.pokefork.hardhat.HardHatNodeConfig
+import vc.rux.pokefork.hardhat.HardhatNode
 
 fun main() {
-    val hhFork = HardhatFork.fork(
-        HardHatForkConfig(
-            rpcUrl = "https://rpc.ankr.com/eth",
-            blockNumber = null,
+    val hhFork = HardhatNode.fork(
+        HardHatNodeConfig.fork(
+            "https://rpc.ankr.com/eth",
         )
     )
     hhFork.stop()

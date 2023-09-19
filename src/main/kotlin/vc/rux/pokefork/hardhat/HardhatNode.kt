@@ -11,28 +11,31 @@ import vc.rux.pokefork.defaultDockerClient
 import vc.rux.pokefork.hardhat.internal.HardHatConfigJs
 import vc.rux.pokefork.hardhat.internal.HardHatDockerfile
 import java.net.HttpURLConnection
-import java.net.URI
 import java.net.URL
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
 import java.nio.file.Files
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.toJavaDuration
 
 
-class HardhatFork private constructor(
-    private val config: HardHatForkConfig,
+class HardhatNode private constructor(
+    private val config: HardHatNodeConfig,
     private val dockerClient: DockerClient = defaultDockerClient
 ){
-    private val networkId = config.networkId ?: 31337
+    private val chainId = config.nodeMode.chainId ?: 31337
     private val imageName: String by config::imageName
-    private val imageTag = config.imageTag ?: "hardhat-${config.hardhatVersion}-chainId-${networkId}"
+    private val imageTag = config.imageTag ?: config.mkImageTag()
     private val fullImage = "$imageName:$imageTag"
 
-    private lateinit var containerId: String
+    lateinit var containerId: String
 
     lateinit var localRpcNodeUrl: String
 
+    private fun HardHatNodeConfig.mkImageTag(): String =
+        "hardhat-${config.hardhatVersion}-${config.nodeMode.idPrefix}${chainId}"
+    private val NodeMode.idPrefix
+        get() = when (this) {
+            is NodeMode.Fork -> 'f'
+            is NodeMode.Local -> 'l'
+        }
     private fun run() {
         if (!checkIfImageExists())
             buildDockerImage(dockerClient, imageName, imageTag)
@@ -47,7 +50,8 @@ class HardhatFork private constructor(
         log.info("run: created container $containerId")
 
         // Start the container
-        dockerClient.startContainerCmd(containerId).exec()
+        dockerClient.startContainerCmd(containerId)
+            .exec()
 
         val mappedRpcPort = dockerClient.inspectContainerCmd(containerId).exec().networkSettings.ports.bindings
             .asSequence()
@@ -97,8 +101,7 @@ class HardhatFork private constructor(
 
         log.info("Stopping container $containerId")
         
-        // Stop and remove the container when done
-        dockerClient.stopContainerCmd(containerId).exec()
+        dockerClient.killContainerCmd(containerId).exec()
         dockerClient.removeContainerCmd(containerId).exec()
     }
 
@@ -112,12 +115,18 @@ class HardhatFork private constructor(
     private fun buildDockerImage(dockerClient: DockerClient, imageName: String, imageTag: String) {
         log.info("buildDockerImage: Building Docker image $imageName:$imageTag")
 
+        val hardhatNodeParams = when (val nodeMode = config.nodeMode) {
+            is NodeMode.Fork -> listOf("--fork", nodeMode.realNodeRpc)
+            is NodeMode.Local -> emptyList()
+        }
+
         val dockerfileContent = HardHatDockerfile(
             jsConfigJs = HardHatConfigJs(
-                chainId = networkId,
+                chainId = chainId,
                 blockNumber = config.blockNumber
             ),
-            hardhatVersion = config.hardhatVersion
+            hardhatVersion = config.hardhatVersion,
+            commandLineParams = listOf("npx", "hardhat", "node") + hardhatNodeParams
         ).toDockerfileContent()
         
         val tmpDir = Files.createTempDirectory(this.javaClass.simpleName)
@@ -126,10 +135,9 @@ class HardhatFork private constructor(
         }
 
         val callback = BuildImageResultCallback()
-        // Build the Docker image from a Dockerfile
+
+        // Build the Docker image from the just created Dockerfile
         dockerClient.buildImageCmd()
-            .withBuildArg("HARDHAT_VERSION", config.hardhatVersion)
-            .withBuildArg("NETWORK_ID", config.networkId?.toString() ?: "31337")
             .withDockerfile(tmpFile)
             .withTags(setOf("$imageName:$imageTag"))
             .exec<ResultCallback<BuildResponseItem>>(callback)
@@ -141,12 +149,12 @@ class HardhatFork private constructor(
     }
 
     companion object {
-        private val log = LoggerFactory.getLogger(HardhatFork::class.java)
+        private val log = LoggerFactory.getLogger(HardhatNode::class.java)
         private val MAX_WAIT_BOOT_TIME = 60.seconds
 
         @JvmStatic
-        fun fork(config: HardHatForkConfig): HardhatFork {
-            return HardhatFork(config).also { it.run() }
+        fun fork(config: HardHatNodeConfig): HardhatNode {
+            return HardhatNode(config).also { it.run() }
         }
     }
 }
