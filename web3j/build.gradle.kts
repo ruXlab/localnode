@@ -19,6 +19,7 @@ dependencies {
     
     testImplementation(platform(testlibs.junit.bom))
     testImplementation(testlibs.junit.api)
+    testImplementation(testlibs.junit.params)
     testRuntimeOnly(testlibs.junit.engine)
     testImplementation(testlibs.assertk)
 }

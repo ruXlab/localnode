@@ -17,8 +17,9 @@ to participate in the EVM network space.
 
 | Local node method | HardHat 👷 |
 |-------------------|------------|
-| `mine`            | :check:    |
-| `setBalance`      | :check:    |
+| `mine`            | ✅          |
+| `setBalance`      | ✅          |
+| `forkBlock`       | ✅          |
 
 ## Goals
 
@@ -34,8 +35,8 @@ to participate in the EVM network space.
   This containerization ensures a consistent and reproducible
   environment for your EVM network forking needs.
 
-- **Network Diversity**: Obvisouly, Ethereum is _still_ Mainnet. But most activities
-  are in the L2 and other L1 chains.
+- **Network Diversity**: Obviously, Ethereum is _still_ Mainnet, the old and very important guy. 
+  But we can't ignore other chains where so much activities are happening.
 
 ## Getting Started
 

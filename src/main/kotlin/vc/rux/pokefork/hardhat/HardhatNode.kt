@@ -7,6 +7,7 @@ import com.github.dockerjava.api.command.CreateContainerResponse
 import com.github.dockerjava.api.model.BuildResponseItem
 import com.github.dockerjava.api.model.HostConfig
 import org.slf4j.LoggerFactory
+import vc.rux.pokefork.ILocalNode
 import vc.rux.pokefork.defaultDockerClient
 import vc.rux.pokefork.hardhat.internal.HardHatConfigJs
 import vc.rux.pokefork.hardhat.internal.HardHatDockerfile
@@ -17,9 +18,9 @@ import kotlin.time.Duration.Companion.seconds
 
 
 class HardhatNode private constructor(
-    private val config: HardHatNodeConfig,
+    val config: HardHatNodeConfig,
     private val dockerClient: DockerClient = defaultDockerClient
-){
+) {
     private val chainId = config.nodeMode.chainId ?: 31337
     private val imageName: String by config::imageName
     private val imageTag = config.imageTag ?: config.mkImageTag()
