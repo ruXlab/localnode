@@ -23,6 +23,21 @@ to participate in the EVM network space.
 
 ## Goals
 
+Have a neat and simple interface to the local hardhat or anvil node from your Java/Kotlin/Scala code. As simple as:
+
+```kotlin
+  val node = HardhatNode.fork(config)
+  val web3 = LocalWeb3jNode.from(node)
+
+  web3.forkBlock(blockNumber)
+  web3.mine(42)
+  web3.setBalance(MY_WALLET, UNICORN_DOLLARS)
+```
+
+Seriously, Java devs deserve it.
+
+
+
 - **Productivity**: The primary goal is to enable developers using
   Kotlin, Scala, or Java to be highly productive when interacting with EVM networks.
 
