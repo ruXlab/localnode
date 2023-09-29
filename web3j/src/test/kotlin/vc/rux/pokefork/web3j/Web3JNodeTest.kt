@@ -9,6 +9,7 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.web3j.protocol.core.DefaultBlockParameterName
+import org.web3j.protocol.core.DefaultBlockParameterName.LATEST
 import vc.rux.pokefork.errors.PokeForkError
 import vc.rux.pokefork.hardhat.HardHatNodeConfig
 import vc.rux.pokefork.hardhat.HardhatNode
@@ -39,7 +40,7 @@ class Web3JNodeTest {
         web3.forkBlock(blockNumber)
 
         // then
-        assertThat(web3.ethGetBalance(FTX_WALLET, DefaultBlockParameterName.LATEST).send().balance)
+        assertThat(web3.ethGetBalance(FTX_WALLET, LATEST).send().balance)
             .isEqualTo((expectedBalance * TEN.pow(18)).toBigInteger())
     }
 
@@ -88,20 +89,35 @@ class Web3JNodeTest {
         // given
         fork = HardhatNode.fork(config)
         val web3 = LocalWeb3jNode.from(fork)
-        val balanceBefore = web3.ethGetBalance(VITALIK_WALLET, DefaultBlockParameterName.LATEST).send().balance
+        val balanceBefore = web3.ethGetBalance(VITALIK_WALLET, LATEST).send().balance
 
         // when
         web3.setBalance(VITALIK_WALLET, 42.toBigInteger())
         web3.mine(1)
 
         // then
-        val balanceAfter = web3.ethGetBalance(VITALIK_WALLET, DefaultBlockParameterName.LATEST).send().balance
+        val balanceAfter = web3.ethGetBalance(VITALIK_WALLET, LATEST).send().balance
         assertThat(balanceAfter).all {
             println(balanceBefore)
             println(balanceAfter)
             isNotEqualTo(balanceBefore)
             isEqualTo(42.toBigInteger())
         }
+    }
+
+    @Test
+    fun `setNextBlockBaseFeePerGas can set base fee per gas`() {
+        // given
+        fork = HardhatNode.fork(config)
+        val web3 = LocalWeb3jNode.from(fork)
+
+        // when
+        web3.setNextBlockBaseFeePerGas(42.toBigInteger())
+        web3.mine(1)
+
+        // then
+        val block = web3.ethGetBlockByNumber(LATEST, false).send().block
+        assertThat(block.baseFeePerGas).isEqualTo(42.toBigInteger())
     }
 
     @Test

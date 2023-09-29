@@ -15,11 +15,12 @@ to participate in the EVM network space.
 
 ## Supported methods
 
-| Local node method | HardHat 👷 |
-|-------------------|------------|
-| `mine`            | ✅          |
-| `setBalance`      | ✅          |
-| `forkBlock`       | ✅          |
+| Local node method           | HardHat 👷 |
+|-----------------------------|------------|
+| `mine`                      | ✅          |
+| `setBalance`                | ✅          |
+| `forkBlock`                 | ✅          |
+| `setNextBlockBaseFeePerGas` | ✅          |
 
 ## Goals
 

@@ -1,5 +1,3 @@
-import org.gradle.api.tasks.testing.logging.TestLogEvent
-
 plugins {
     kotlin("jvm") version "1.9.0"
     application
@@ -30,8 +28,9 @@ tasks.test {
 }
 
 kotlin {
-    jvmToolchain(11)
+    jvmToolchain(17)
 }
+
 
 application {
     mainClass.set("MainKt")

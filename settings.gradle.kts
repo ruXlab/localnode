@@ -18,7 +18,7 @@ dependencyResolutionManagement {
     }
     versionCatalogs {
         create("libs") {
-            version("web3j", "5.0.0")
+            version("web3j", "4.10.3")
 
             library("dockerjava", "com.github.docker-java:docker-java:3.3.3")
 

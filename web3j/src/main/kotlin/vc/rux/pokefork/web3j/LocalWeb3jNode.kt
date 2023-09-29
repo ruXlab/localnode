@@ -46,6 +46,21 @@ class LocalWeb3jNode(
         log.debug("forkBlock: forked from $blockNumber, fork took: ${currentTimeMillis() - startedAt}ms")
     }
 
+    override fun setNextBlockBaseFeePerGas(baseFeePerGas: BigInteger) {
+        log.debug("setNextBlockBaseFeePerGas: setting baseFeePerGas to {}", baseFeePerGas)
+        val resp = httpService.send(
+            Request(
+                "hardhat_setNextBlockBaseFeePerGas",
+                listOf(baseFeePerGas.toHexStringPrefixed()),
+                httpService,
+                HardhatStringResponse::class.java
+            ),
+            HardhatStringResponse::class.java
+        )
+
+        resp.throwIfErroredOrResultIsNotTrue()
+    }
+
     override fun mine(blocks: Int) {
         log.debug("mine: Mining $blocks blocks")
         val resp = httpService.send(
