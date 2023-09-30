@@ -28,69 +28,32 @@ class LocalWeb3jNode(
         val realRpcUrl = (hardhatNode.config.nodeMode as? NodeMode.Fork)?.realNodeRpc
             ?: throw IllegalArgumentException("Node is not running in fork mode, used configuration: ${hardhatNode.config.nodeMode.javaClass.simpleName}")
 
-        val resp = httpService.send(
-            Request(
-                "hardhat_reset",
-                listOf(
-                    mapOf("forking" to mapOf(
-                        "jsonRpcUrl" to realRpcUrl,
-                        "blockNumber" to blockNumber
-                    )),
-                ),
-                httpService,
-                HardhatStringResponse::class.java
-            ),
-            HardhatStringResponse::class.java
-        )
-
-        resp.throwIfErroredOrResultIsNotTrue()
+        sendRpcCallAndCheckResponse("hardhat_reset", listOf(
+            mapOf("forking" to mapOf(
+                "jsonRpcUrl" to realRpcUrl,
+                "blockNumber" to blockNumber
+            )),
+        ))
 
         log.debug("forkBlock: forked from $blockNumber, fork took: ${currentTimeMillis() - startedAt}ms")
     }
 
     override fun setNextBlockBaseFeePerGas(baseFeePerGas: BigInteger) {
         log.debug("setNextBlockBaseFeePerGas: setting baseFeePerGas to {}", baseFeePerGas)
-        val resp = httpService.send(
-            Request(
-                "hardhat_setNextBlockBaseFeePerGas",
-                listOf(baseFeePerGas.toHexStringPrefixed()),
-                httpService,
-                HardhatStringResponse::class.java
-            ),
-            HardhatStringResponse::class.java
-        )
-
-        resp.throwIfErroredOrResultIsNotTrue()
+        sendRpcCallAndCheckResponse("hardhat_setNextBlockBaseFeePerGas", listOf(baseFeePerGas.toHexStringPrefixed()))
     }
 
     override fun mine(blocks: Int) {
         log.debug("mine: Mining $blocks blocks")
-        val resp = httpService.send(
-            Request(
-                "hardhat_mine",
-                listOf(blocks.toHexStringPrefixed()),
-                httpService,
-                HardhatMineResponse::class.java
-            ),
-            HardhatMineResponse::class.java
-        )
-
-        resp.throwIfErroredOrResultIsNotTrue()
+        sendRpcCallAndCheckResponse("hardhat_mine", listOf(blocks.toHexStringPrefixed()))
     }
 
     override fun setBalance(destination: String, balance: BigInteger) {
         log.info("mine: set balance of {} to {}", destination, balance)
-        val resp = httpService.send(
-            Request(
-                "hardhat_setBalance",
-                listOf(destination, balance.toHexStringPrefixed()),
-                httpService,
-                HardhatSetBalanceResponse::class.java
-            ),
-            HardhatSetBalanceResponse::class.java
-        )
 
-        resp.throwIfErroredOrResultIsNotTrue()
+        sendRpcCallAndCheckResponse("hardhat_setBalance",
+            listOf(destination, balance.toHexStringPrefixed())
+        )
     }
 
     override fun setStorageAt(destination: String, offset: BigInteger, value: BigInteger) {
@@ -106,25 +69,28 @@ class LocalWeb3jNode(
         val (hexOffset, hexValue) = (offset.toHexStringPrefixed() to value.toHexStringSuffixed(32))
 
         log.info("setStorageAt: set storage of {} at {} to {}", destination, hexOffset, hexValue)
-        val resp = httpService.send(
-            Request(
-                "hardhat_setStorageAt",
-                listOf(destination, hexOffset, hexValue),
-                httpService,
-                HardhatSetBalanceResponse::class.java
-            ),
-            HardhatSetBalanceResponse::class.java
+        sendRpcCallAndCheckResponse("hardhat_setStorageAt",
+            listOf(destination, hexOffset, hexValue)
         )
-
-        resp.throwIfErroredOrResultIsNotTrue()
     }
 
+    /**
+     * Helper method; reduces boilerplate
+     */
+    private fun sendRpcCallAndCheckResponse(
+        method: String,
+        params: List<Any>,
+    ) {
+        httpService.send(
+            Request(method, params, httpService, HardhatStringResponse::class.java),
+            HardhatStringResponse::class.java
+        ).also { resp ->
+            resp.throwIfErroredOrResultIsNotTrue()
+        }
+    }
 
     internal class HardhatStringResponse : Response<String>()
-
-    internal class HardhatMineResponse : Response<String>()
-    internal class HardhatSetBalanceResponse : Response<String>()
-
+    
     companion object {
         private val log = LoggerFactory.getLogger(LocalWeb3jNode::class.java)
 
