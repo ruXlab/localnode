@@ -21,6 +21,8 @@ to participate in the EVM network space.
 | `setBalance`                | ✅          |
 | `forkBlock`                 | ✅          |
 | `setNextBlockBaseFeePerGas` | ✅          |
+| `setStorageAt`              | ✅          |
+
 
 ## Goals
 

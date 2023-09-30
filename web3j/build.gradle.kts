@@ -16,7 +16,8 @@ dependencies {
     implementation(project(":core"))
     implementation(libs.web3j)
     implementation(libs.bundles.logging)
-    
+
+    testImplementation(libs.web3j.contracts)
     testImplementation(platform(testlibs.junit.bom))
     testImplementation(testlibs.junit.api)
     testImplementation(testlibs.junit.params)

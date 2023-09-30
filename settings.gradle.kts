@@ -27,6 +27,7 @@ dependencyResolutionManagement {
             bundle("logging", listOf("slf4j-api", "logback-classic"))
 
             library("web3j", "org.web3j", "core").versionRef("web3j")
+            library("web3j-contracts", "org.web3j", "contracts").versionRef("web3j")
 
         }
         create("testlibs") {

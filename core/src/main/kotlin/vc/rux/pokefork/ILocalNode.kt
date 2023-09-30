@@ -22,4 +22,14 @@ interface ILocalNode {
      * @param balance balance in wei
      */
     fun setBalance(destination: String, balance: BigInteger)
+
+    /**
+     * Sets the storage value at the specified address and offset
+     * @param destination contract address
+     * @param offset storage offset
+     * @param value storage value, max 32 bytes
+     * @throws IllegalArgumentException if value is greater than 32 bytes
+     * @throws IllegalArgumentException if offset is greater than 32 bytes or negative
+     */
+    fun setStorageAt(destination: String, offset: BigInteger, value: BigInteger)
 }

@@ -8,14 +8,17 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
-import org.web3j.protocol.core.DefaultBlockParameterName
+import org.web3j.contracts.eip20.generated.ERC20
 import org.web3j.protocol.core.DefaultBlockParameterName.LATEST
+import org.web3j.tx.gas.DefaultGasProvider
 import vc.rux.pokefork.errors.PokeForkError
 import vc.rux.pokefork.hardhat.HardHatNodeConfig
 import vc.rux.pokefork.hardhat.HardhatNode
 import vc.rux.pokefork.hardhat.NodeMode
+import vc.rux.pokefork.web3j.utils.toHexStringSuffixed
 import java.math.BigDecimal
 import java.math.BigDecimal.TEN
+import java.math.BigInteger
 
 class Web3JNodeTest {
     private lateinit var fork: HardhatNode
@@ -105,6 +108,30 @@ class Web3JNodeTest {
         }
     }
 
+
+    @Test
+    fun `setStorageAt can change the token name`() {
+        // given
+        fork = HardhatNode.fork(config)
+        val web3 = LocalWeb3jNode.from(fork)
+
+        val ust = ERC20.load(UST_TOKEN, web3, randomCredentials, DefaultGasProvider());
+        val newName = "UnSTablecoin"
+        val newNameInMemoryLayout = run { // let's do low level string formation
+            val nameAsHexAlignedLeft = BigInteger(newName.toByteArray()).toHexStringSuffixed(32).drop(2)
+            BigInteger(nameAsHexAlignedLeft, 16).or(newName.length.toBigInteger() * BigInteger.TWO)
+        }
+        // precondition
+        assertThat(ust.symbol().send()).isEqualTo("UST")
+
+        // when
+        // utf8 string to BigInteger
+        web3.setStorageAt(UST_TOKEN, 0x4.toBigInteger(), newNameInMemoryLayout)
+
+        // then
+        assertThat(ust.symbol().send()).isEqualTo(newName)
+    }
+
     @Test
     fun `setNextBlockBaseFeePerGas can set base fee per gas`() {
         // given
@@ -140,5 +167,6 @@ class Web3JNodeTest {
     companion object {
         const val VITALIK_WALLET = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
         const val FTX_WALLET = "0x2FAF487A4414Fe77e2327F0bf4AE2a264a776AD2"
+        const val UST_TOKEN = "0xa47c8bf37f92abed4a126bda807a7b7498661acd"
     }
 }

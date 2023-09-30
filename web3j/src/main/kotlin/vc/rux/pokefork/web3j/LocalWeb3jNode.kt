@@ -6,11 +6,13 @@ import org.web3j.protocol.core.JsonRpc2_0Web3j
 import org.web3j.protocol.core.Request
 import org.web3j.protocol.core.Response
 import org.web3j.protocol.http.HttpService
+import org.web3j.utils.Numeric
 import vc.rux.pokefork.IForkNode
 import vc.rux.pokefork.ILocalNode
 import vc.rux.pokefork.hardhat.HardhatNode
 import vc.rux.pokefork.hardhat.NodeMode
 import vc.rux.pokefork.web3j.utils.toHexStringPrefixed
+import vc.rux.pokefork.web3j.utils.toHexStringSuffixed
 import java.lang.System.currentTimeMillis
 import java.math.BigInteger
 
@@ -82,6 +84,32 @@ class LocalWeb3jNode(
             Request(
                 "hardhat_setBalance",
                 listOf(destination, balance.toHexStringPrefixed()),
+                httpService,
+                HardhatSetBalanceResponse::class.java
+            ),
+            HardhatSetBalanceResponse::class.java
+        )
+
+        resp.throwIfErroredOrResultIsNotTrue()
+    }
+
+    override fun setStorageAt(destination: String, offset: BigInteger, value: BigInteger) {
+        if (offset.bitLength() > 256)
+            throw IllegalArgumentException("Offset is greater than U256")
+        if (offset < BigInteger.ZERO)
+            throw IllegalArgumentException("Offset can't be negative")
+        if (value.bitLength() > 256)
+            throw IllegalArgumentException("Value is greater than U256")
+        if (value < BigInteger.ZERO)
+            throw IllegalArgumentException("Value can't be negative")
+
+        val (hexOffset, hexValue) = (offset.toHexStringPrefixed() to value.toHexStringSuffixed(32))
+
+        log.info("setStorageAt: set storage of {} at {} to {}", destination, hexOffset, hexValue)
+        val resp = httpService.send(
+            Request(
+                "hardhat_setStorageAt",
+                listOf(destination, hexOffset, hexValue),
                 httpService,
                 HardhatSetBalanceResponse::class.java
             ),
