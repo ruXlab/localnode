@@ -1,50 +1,44 @@
-package vc.rux.pokefork.hardhat
+package vc.rux.pokefork.anvil
 
 import com.github.dockerjava.api.DockerClient
-import com.github.dockerjava.api.async.ResultCallback
-import com.github.dockerjava.api.command.BuildImageResultCallback
 import com.github.dockerjava.api.command.CreateContainerResponse
-import com.github.dockerjava.api.model.BuildResponseItem
+import com.github.dockerjava.api.model.ExposedPort
 import com.github.dockerjava.api.model.HostConfig
 import org.slf4j.LoggerFactory
 import vc.rux.pokefork.NodeMode
 import vc.rux.pokefork.common.idPrefix
 import vc.rux.pokefork.defaultDockerClient
-import vc.rux.pokefork.hardhat.internal.HardHatConfigJs
-import vc.rux.pokefork.hardhat.internal.HardHatDockerfile
+import vc.rux.pokefork.hardhat.HardhatNode
 import java.net.HttpURLConnection
 import java.net.URL
-import java.nio.file.Files
 import kotlin.time.Duration.Companion.seconds
 
-
-class HardhatNode private constructor(
-    val config: HardHatNodeConfig,
+class AnvilNode private constructor(
+    val config: AnvilNodeConfig,
     private val dockerClient: DockerClient = defaultDockerClient
 ) {
     private val chainId = config.nodeMode.chainId ?: 31337
     private val imageName: String by config::imageName
-    private val imageTag = config.imageTag ?: config.mkImageTag()
+    private val imageTag = config.imageTag ?: mkImageTag()
     private val fullImage = "$imageName:$imageTag"
 
     lateinit var containerId: String
 
     lateinit var localRpcNodeUrl: String
 
-    private fun HardHatNodeConfig.mkImageTag(): String =
-        "hardhat-${config.hardhatVersion}-${config.nodeMode.idPrefix}${chainId}"
+    private fun mkImageTag(): String =
+        "anvil-${config.nodeMode.idPrefix}$chainId"
     private fun run() {
-        if (!checkIfImageExists())
-            buildDockerImage(dockerClient, imageName, imageTag)
-        
-        val containerConfig = dockerClient.createContainerCmd(fullImage)
+        val containerConfig = dockerClient.createContainerCmd(config.foundryImage)
+            .withEntrypoint("anvil", *mkAnvilParams().toTypedArray())
+            .withExposedPorts(ExposedPort.tcp(8545))
             .withHostConfig(HostConfig.newHostConfig().withPublishAllPorts(true))
-
+        
         // Create the container
         val containerResponse: CreateContainerResponse = containerConfig.exec()
         containerId = containerResponse.id
 
-        log.info("run: created container $containerId")
+        log.info("run: created foundry(anvil) container $containerId")
 
         // Start the container
         dockerClient.startContainerCmd(containerId)
@@ -97,61 +91,29 @@ class HardhatNode private constructor(
             throw IllegalStateException("The container is not running, cannot stop it")
 
         log.info("Stopping container $containerId")
-        
+
         dockerClient.killContainerCmd(containerId).exec()
         dockerClient.removeContainerCmd(containerId).exec()
     }
-
-    private fun checkIfImageExists(): Boolean {
-        dockerClient.listImagesCmd().exec().forEach { image ->
-            if (image.repoTags.any { it == fullImage }) return true
-        }
-        return false
+    
+    private fun mkAnvilParams(): List<String> {
+        return listOfNotNull(
+            when (val nodeMode = config.nodeMode) {
+                is NodeMode.Fork -> listOf("--fork-url", nodeMode.realNodeRpc)
+                is NodeMode.Local -> emptyList()
+            },
+            listOf("--chain-id", chainId.toString(), "--host", "0.0.0.0"),
+            config.blockNumber?.let { listOf("--fork-block-number", it.toString()) },
+        ).flatten()
     }
-
-    private fun buildDockerImage(dockerClient: DockerClient, imageName: String, imageTag: String) {
-        log.info("buildDockerImage: Building Docker image $imageName:$imageTag")
-
-        val hardhatNodeParams = when (val nodeMode = config.nodeMode) {
-            is NodeMode.Fork -> listOf("--fork", nodeMode.realNodeRpc)
-            is NodeMode.Local -> emptyList()
-        }
-
-        val dockerfileContent = HardHatDockerfile(
-            jsConfigJs = HardHatConfigJs(
-                chainId = chainId,
-                blockNumber = config.blockNumber
-            ),
-            hardhatVersion = config.hardhatVersion,
-            commandLineParams = listOf("npx", "hardhat", "node") + hardhatNodeParams
-        ).toDockerfileContent()
-        
-        val tmpDir = Files.createTempDirectory(this.javaClass.simpleName)
-        val tmpFile = Files.writeString(tmpDir.resolve("Dockerfile"), dockerfileContent).toFile().also {
-            it.deleteOnExit()
-        }
-
-        val callback = BuildImageResultCallback()
-
-        // Build the Docker image from the just created Dockerfile
-        dockerClient.buildImageCmd()
-            .withDockerfile(tmpFile)
-            .withTags(setOf("$imageName:$imageTag"))
-            .exec<ResultCallback<BuildResponseItem>>(callback)
-
-        val imageId = callback.awaitImageId()
-
-        tmpFile.delete()
-        log.info("buildDockerImage: finished building $fullImage, imageId: $imageId")
-    }
-
+    
     companion object {
         private val log = LoggerFactory.getLogger(HardhatNode::class.java)
         private val MAX_WAIT_BOOT_TIME = 60.seconds
 
         @JvmStatic
-        fun fork(config: HardHatNodeConfig): HardhatNode {
-            return HardhatNode(config).also { it.run() }
+        fun start(config: AnvilNodeConfig): AnvilNode {
+            return AnvilNode(config).also { it.run() }
         }
     }
 }

@@ -1,4 +1,4 @@
-package vc.rux.pokefork.hardhat
+package vc.rux.pokefork
 
 /**
  * NodeMode is a sealed interface with two implementations:
