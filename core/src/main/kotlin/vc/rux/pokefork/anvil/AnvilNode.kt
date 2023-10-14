@@ -2,8 +2,10 @@ package vc.rux.pokefork.anvil
 
 import com.github.dockerjava.api.DockerClient
 import com.github.dockerjava.api.command.CreateContainerResponse
+import com.github.dockerjava.api.command.PullImageResultCallback
 import com.github.dockerjava.api.model.ExposedPort
 import com.github.dockerjava.api.model.HostConfig
+import com.github.dockerjava.api.model.PullResponseItem
 import org.slf4j.LoggerFactory
 import vc.rux.pokefork.NodeMode
 import vc.rux.pokefork.common.idPrefix
@@ -29,6 +31,8 @@ class AnvilNode private constructor(
     private fun mkDefaultImageTag(): String =
         "anvil-${config.nodeMode.idPrefix}$chainId"
     private fun run() {
+        ensureImagePulled()
+
         val containerConfig = dockerClient.createContainerCmd(config.foundryImage)
             .withEntrypoint("anvil", *mkAnvilParams().toTypedArray())
             .withExposedPorts(ExposedPort.tcp(8545))
@@ -56,6 +60,24 @@ class AnvilNode private constructor(
             mappedRpcPort.first, mappedRpcPort.second, localRpcNodeUrl)
 
         waitForRpcToBoot(localRpcNodeUrl, fullImage, MAX_WAIT_BOOT_TIME, READINESS_CHECK_INTERVAL)
+    }
+
+    private fun ensureImagePulled() {
+        val callback = object: PullImageResultCallback() {
+            override fun onNext(item: PullResponseItem?) {
+                super.onNext(item)
+                log.info("Pulling image ${config.foundryImage}: {}", item)
+            }
+
+            override fun onComplete() {
+                super.onComplete()
+                log.info("Pulled image ${config.foundryImage}")
+            }
+        }
+        dockerClient.pullImageCmd(config.foundryImage)
+            .exec(callback)
+
+        callback.awaitCompletion()
     }
 
 
