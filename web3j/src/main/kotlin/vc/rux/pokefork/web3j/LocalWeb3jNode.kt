@@ -6,11 +6,10 @@ import org.web3j.protocol.core.JsonRpc2_0Web3j
 import org.web3j.protocol.core.Request
 import org.web3j.protocol.core.Response
 import org.web3j.protocol.http.HttpService
-import org.web3j.utils.Numeric
 import vc.rux.pokefork.IForkNode
 import vc.rux.pokefork.ILocalNode
+import vc.rux.pokefork.NodeMode
 import vc.rux.pokefork.hardhat.HardhatNode
-import vc.rux.pokefork.hardhat.NodeMode
 import vc.rux.pokefork.web3j.utils.toHexStringPrefixed
 import vc.rux.pokefork.web3j.utils.toHexStringSuffixed
 import java.lang.System.currentTimeMillis

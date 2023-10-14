@@ -11,10 +11,10 @@ import org.junit.jupiter.params.provider.CsvSource
 import org.web3j.contracts.eip20.generated.ERC20
 import org.web3j.protocol.core.DefaultBlockParameterName.LATEST
 import org.web3j.tx.gas.DefaultGasProvider
+import vc.rux.pokefork.NodeMode
 import vc.rux.pokefork.errors.PokeForkError
 import vc.rux.pokefork.hardhat.HardHatNodeConfig
 import vc.rux.pokefork.hardhat.HardhatNode
-import vc.rux.pokefork.hardhat.NodeMode
 import vc.rux.pokefork.web3j.utils.toHexStringSuffixed
 import java.math.BigDecimal
 import java.math.BigDecimal.TEN

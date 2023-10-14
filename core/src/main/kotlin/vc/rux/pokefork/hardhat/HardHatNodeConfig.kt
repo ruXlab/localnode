@@ -1,5 +1,7 @@
 package vc.rux.pokefork.hardhat
 
+import vc.rux.pokefork.NodeMode
+
 data class HardHatNodeConfig(
     val nodeMode: NodeMode,
     val blockNumber: Long? = null,
@@ -28,4 +30,5 @@ data class HardHatNodeConfig(
             HardHatNodeConfig(
                 nodeMode = NodeMode.Local(chainId)
             )
-    }}
+    }
+}

@@ -19,14 +19,14 @@ class AnvilNode private constructor(
 ) {
     private val chainId = config.nodeMode.chainId ?: 31337
     private val imageName: String by config::imageName
-    private val imageTag = config.imageTag ?: mkImageTag()
+    private val imageTag = config.imageTag ?: mkDefaultImageTag()
     private val fullImage = "$imageName:$imageTag"
 
     lateinit var containerId: String
 
     lateinit var localRpcNodeUrl: String
 
-    private fun mkImageTag(): String =
+    private fun mkDefaultImageTag(): String =
         "anvil-${config.nodeMode.idPrefix}$chainId"
     private fun run() {
         val containerConfig = dockerClient.createContainerCmd(config.foundryImage)
