@@ -7,10 +7,10 @@ import com.github.dockerjava.api.model.HostConfig
 import org.slf4j.LoggerFactory
 import vc.rux.pokefork.NodeMode
 import vc.rux.pokefork.common.idPrefix
+import vc.rux.pokefork.common.waitForRpcToBoot
 import vc.rux.pokefork.defaultDockerClient
 import vc.rux.pokefork.hardhat.HardhatNode
-import java.net.HttpURLConnection
-import java.net.URL
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 class AnvilNode private constructor(
@@ -55,36 +55,9 @@ class AnvilNode private constructor(
         log.warn("Container's port {} is bound to {}, the local node should be available at {}",
             mappedRpcPort.first, mappedRpcPort.second, localRpcNodeUrl)
 
-        waitForRpcToBoot()
+        waitForRpcToBoot(localRpcNodeUrl, fullImage, MAX_WAIT_BOOT_TIME, READINESS_CHECK_INTERVAL)
     }
 
-    // A very simple RPC client without extra dependencies
-    private fun waitForRpcToBoot() {
-        val startedAt = System.currentTimeMillis()
-        val requestBody = """{"jsonrpc":"2.0","method":"net_version","params":[],"id":67}"""
-        while(System.currentTimeMillis() - startedAt < MAX_WAIT_BOOT_TIME.inWholeMilliseconds) {
-            try {
-                val conn = URL(localRpcNodeUrl).openConnection() as HttpURLConnection
-                conn.doOutput = true
-                conn.requestMethod = "POST"
-                conn.setRequestProperty("Content-Type", "application/json")
-                conn.outputStream.use { it.write(requestBody.toByteArray()) }
-
-                val code = conn.responseCode
-                if (code == 200) {
-                    log.debug("The local RPC node became available after ${System.currentTimeMillis() - startedAt}ms")
-                    return
-                }
-                throw IllegalStateException("The local RPC node is not available yet, got ${code} response")
-            } catch (e: Exception) {
-                log.debug("Failed to communicate with the local RPC: $e")
-            }
-
-            Thread.sleep(300)
-        }
-
-        throw IllegalStateException("The container $fullImage started but the RPC is not available after $MAX_WAIT_BOOT_TIME")
-    }
 
     fun stop() {
         if (!::containerId.isInitialized)
@@ -110,6 +83,7 @@ class AnvilNode private constructor(
     companion object {
         private val log = LoggerFactory.getLogger(HardhatNode::class.java)
         private val MAX_WAIT_BOOT_TIME = 60.seconds
+        private val READINESS_CHECK_INTERVAL = 100.milliseconds
 
         @JvmStatic
         fun start(config: AnvilNodeConfig): AnvilNode {
