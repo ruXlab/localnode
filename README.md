@@ -1,6 +1,9 @@
 # 🍴 PokeFork: Seamless integration of Hardhat and Foundry Anvil with your Java/Kotlin app
 
 ![build status](https://github.com/ruXlab/pokefork/actions/workflows/tests.yml/badge.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+
 
 PokeFork is an open-source library project designed to empower
 developers working with Ethereum Virtual Machine (EVM) based networks.
@@ -17,13 +20,13 @@ to participate in the EVM network space.
 
 ## Supported methods
 
-| Local node method           | HardHat 👷 | Foundry Anvil ⚒️ |
-|-----------------------------|------------|------------------|
-| `mine`                      | ✅          | ✅                |
-| `setBalance`                | ✅          | ✅                |
-| `forkBlock`                 | ✅          | ✅                |
-| `setNextBlockBaseFeePerGas` | ✅          | ✅                |
-| `setStorageAt`              | ✅          | ✅                |
+|           Local node method | HardHat 👷 | Foundry Anvil ⚒️ |
+|----------------------------:|:----------:|:----------------:|
+|                      `mine` |     ✅      |        ✅         |
+|                `setBalance` |     ✅      |        ✅         |
+|                 `forkBlock` |     ✅      |        ✅         |
+| `setNextBlockBaseFeePerGas` |     ✅      |        ✅         |
+|              `setStorageAt` |     ✅      |        ✅         |
 
 ## Goals
 
