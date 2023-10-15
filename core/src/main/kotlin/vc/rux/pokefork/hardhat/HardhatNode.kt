@@ -16,11 +16,10 @@ import vc.rux.pokefork.hardhat.internal.HardHatDockerfile
 import java.nio.file.Files
 import kotlin.time.Duration.Companion.seconds
 
-
 class HardhatNode private constructor(
     val config: HardHatNodeConfig,
     private val dockerClient: DockerClient = defaultDockerClient
-) {
+) : IEthereumLikeNode {
     private val chainId = config.nodeMode.chainId ?: 31337L
     private val imageName: String by config::imageName
     private val imageTag = config.imageTag ?: mkDefaultImageTag()
@@ -28,7 +27,8 @@ class HardhatNode private constructor(
 
     lateinit var containerId: String
 
-    lateinit var localRpcNodeUrl: String
+    override lateinit var localRpcNodeUrl: String
+    override val nodeMode: NodeMode by config::nodeMode
 
     private fun mkDefaultImageTag(): String =
         "hardhat-${config.hardhatVersion}-${config.nodeMode.idPrefix}$chainId"
@@ -66,7 +66,7 @@ class HardhatNode private constructor(
         waitForRpcToBoot(localRpcNodeUrl, imageName, MAX_WAIT_BOOT_TIME)
     }
 
-    fun stop() {
+    override fun stop() {
         if (!::containerId.isInitialized)
             throw IllegalStateException("The container is not running, cannot stop it")
 
@@ -124,7 +124,7 @@ class HardhatNode private constructor(
         private val MAX_WAIT_BOOT_TIME = 60.seconds
 
         @JvmStatic
-        fun fork(config: HardHatNodeConfig): HardhatNode {
+        fun start(config: HardHatNodeConfig): HardhatNode {
             return HardhatNode(config).also { it.run() }
         }
     }

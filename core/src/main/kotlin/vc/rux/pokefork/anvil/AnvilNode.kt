@@ -12,13 +12,14 @@ import vc.rux.pokefork.common.idPrefix
 import vc.rux.pokefork.common.waitForRpcToBoot
 import vc.rux.pokefork.defaultDockerClient
 import vc.rux.pokefork.hardhat.HardhatNode
+import vc.rux.pokefork.hardhat.IEthereumLikeNode
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 class AnvilNode private constructor(
     val config: AnvilNodeConfig,
     private val dockerClient: DockerClient = defaultDockerClient
-) {
+): IEthereumLikeNode {
     private val chainId = config.nodeMode.chainId ?: 31337
     private val imageName: String by config::imageName
     private val imageTag = config.imageTag ?: mkDefaultImageTag()
@@ -26,7 +27,9 @@ class AnvilNode private constructor(
 
     lateinit var containerId: String
 
-    lateinit var localRpcNodeUrl: String
+    override lateinit var localRpcNodeUrl: String
+    override val nodeMode: NodeMode by config::nodeMode
+
 
     private fun mkDefaultImageTag(): String =
         "anvil-${config.nodeMode.idPrefix}$chainId"
@@ -81,7 +84,7 @@ class AnvilNode private constructor(
     }
 
 
-    fun stop() {
+    override fun stop() {
         if (!::containerId.isInitialized)
             throw IllegalStateException("The container is not running, cannot stop it")
 

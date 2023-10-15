@@ -21,7 +21,7 @@ internal fun Response<*>.throwIfErrored() {
     }
 }
 internal fun Response<*>.throwIfResultIsNotTrue() {
-    if (result != "true") {
+    if (result != null && result != "true") {
         throw PokeForkError("No errors were reported but server returned '$result' instead of expected 'true'")
     }
 }

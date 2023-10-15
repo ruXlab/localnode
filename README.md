@@ -1,9 +1,11 @@
-# 🍴 PokeFork: EVM Network Forking Library for Kotlin, Scala, and Java Developers
+# 🍴 PokeFork: Seamless integration of Hardhat and Foundry Anvil with your Java/Kotlin app
+
+![build status](https://github.com/ruXlab/pokefork/actions/workflows/tests.yml/badge.svg)
 
 PokeFork is an open-source library project designed to empower
 developers working with Ethereum Virtual Machine (EVM) networks.
-It offers the ability to fork off Ethereum-like networks and enables
-the massive swarm of JVM to test their smart contracts and applications.
+It allows to run a local development or forked node of the Ethereum-like network 
+using Hardhat or Foundry Anvil and interact with it from your Java/Kotlin/Scala code.
 
 ## Motivation
 

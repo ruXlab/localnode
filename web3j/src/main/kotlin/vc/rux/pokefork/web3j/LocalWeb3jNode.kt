@@ -9,7 +9,7 @@ import org.web3j.protocol.http.HttpService
 import vc.rux.pokefork.IForkNode
 import vc.rux.pokefork.ILocalNode
 import vc.rux.pokefork.NodeMode
-import vc.rux.pokefork.hardhat.HardhatNode
+import vc.rux.pokefork.hardhat.IEthereumLikeNode
 import vc.rux.pokefork.web3j.utils.toHexStringPrefixed
 import vc.rux.pokefork.web3j.utils.toHexStringSuffixed
 import java.lang.System.currentTimeMillis
@@ -17,15 +17,15 @@ import java.math.BigInteger
 
 // hm, looks like it can be a separate project
 class LocalWeb3jNode(
-    private val hardhatNode: HardhatNode,
+    private val hardhatNode: IEthereumLikeNode,
     private val jsonRpc20: JsonRpc2_0Web3j,
     private val httpService: HttpService,
 ) : ILocalNode, IForkNode, Web3j by jsonRpc20 {
     override fun forkBlock(blockNumber: Long) {
         log.debug("forkBlock: forking from $blockNumber")
         val startedAt = currentTimeMillis()
-        val realRpcUrl = (hardhatNode.config.nodeMode as? NodeMode.Fork)?.realNodeRpc
-            ?: throw IllegalArgumentException("Node is not running in fork mode, used configuration: ${hardhatNode.config.nodeMode.javaClass.simpleName}")
+        val realRpcUrl = (hardhatNode.nodeMode as? NodeMode.Fork)?.realNodeRpc
+            ?: throw IllegalArgumentException("Node is not running in fork mode, used configuration: ${hardhatNode.nodeMode.javaClass.simpleName}")
 
         sendRpcCallAndCheckResponse("hardhat_reset", listOf(
             mapOf("forking" to mapOf(
@@ -93,7 +93,7 @@ class LocalWeb3jNode(
     companion object {
         private val log = LoggerFactory.getLogger(LocalWeb3jNode::class.java)
 
-        fun from(hardhatNode: HardhatNode): LocalWeb3jNode {
+        fun from(hardhatNode: IEthereumLikeNode): LocalWeb3jNode {
             val http = HttpService(hardhatNode.localRpcNodeUrl)
             return LocalWeb3jNode(hardhatNode, JsonRpc2_0Web3j(http), http)
         }
