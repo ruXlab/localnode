@@ -3,9 +3,9 @@
 ![build status](https://github.com/ruXlab/pokefork/actions/workflows/tests.yml/badge.svg)
 
 PokeFork is an open-source library project designed to empower
-developers working with Ethereum Virtual Machine (EVM) networks.
+developers working with Ethereum Virtual Machine (EVM) based networks.
 It allows to run a local development or forked node of the Ethereum-like network 
-using Hardhat or Foundry Anvil and interact with it from your Java/Kotlin/Scala code.
+using **Hardhat or Foundry Anvil** and interact with it from your Java/Kotlin/Scala code.
 
 ## Motivation
 
@@ -17,21 +17,24 @@ to participate in the EVM network space.
 
 ## Supported methods
 
-| Local node method           | HardHat 👷 |
-|-----------------------------|------------|
-| `mine`                      | ✅          |
-| `setBalance`                | ✅          |
-| `forkBlock`                 | ✅          |
-| `setNextBlockBaseFeePerGas` | ✅          |
-| `setStorageAt`              | ✅          |
-
+| Local node method           | HardHat 👷 | Foundry Anvil ⚒️ |
+|-----------------------------|------------|------------------|
+| `mine`                      | ✅          | ✅                |
+| `setBalance`                | ✅          | ✅                |
+| `forkBlock`                 | ✅          | ✅                |
+| `setNextBlockBaseFeePerGas` | ✅          | ✅                |
+| `setStorageAt`              | ✅          | ✅                |
 
 ## Goals
 
 Have a neat and simple interface to the local hardhat or anvil node from your Java/Kotlin/Scala code. As simple as:
 
 ```kotlin
+  // start node in fork mode
   val node = HardhatNode.fork(config)
+  val node = AnvilNode.fork(config)
+
+  // initialise local node RPC client
   val web3 = LocalWeb3jNode.from(node)
 
   web3.forkBlock(blockNumber)
@@ -44,19 +47,18 @@ Seriously, Java devs deserve it.
 
 
 - **Productivity**: The primary goal is to enable developers using
-  Kotlin, Scala, or Java to be highly productive when interacting with EVM networks.
+  Kotlin, Scala, or Java to be highly productive when interacting with EVM networks, 
+  testing their smart contracts, interacting with external protocols or collecting data.
 
-- **Extensibility**: Initially, PokeFork works seamlessly with
-  Hardhat, a popular development environment for Ethereum.
-  However, the roadmap includes plans to extend support anvil. Your PRs are welcome!
+- **Extensibility**: PokeFork works seamlessly with
+  Hardhat node and Foundry's Anvil, both are popular development local nodes for the Ethereum developers.
 
-- **Docker Container**: PokeFork operates within a Docker
-  container, making it a hard dependency for the library.
-  This containerization ensures a consistent and reproducible
-  environment for your EVM network forking needs.
+- **Docker Container**: PokeFork runs local node **inside** docker container. This removes headache of installing
+  and configuring local node on your machine, not to mention allows to concurrent run of multiple nodes without
+  port conflicts.
 
-- **Network Diversity**: Obviously, Ethereum is _still_ Mainnet, the old and very important guy. 
-  But we can't ignore other chains where so much activities are happening.
+- **Network Diversity**: Ethereum is _still_ the Mainnet, the old and very important guy. 
+  It would be naive to say that in 2023 it's the only blockchain that matters.
 
 ## Getting Started
 
@@ -65,7 +67,7 @@ Clone and build the PokeFork project:
 ```bash
 git clone 
 cd pokefork
-./gradlew build
+./gradlew test build
 ```
 
 TBD
@@ -73,6 +75,8 @@ TBD
 ## Contributing
 
 Feel free to create PR or issues.
+
+Please kindly provide a end-to-end test for the feature you are adding.
 
 ## Disclaimer
 
