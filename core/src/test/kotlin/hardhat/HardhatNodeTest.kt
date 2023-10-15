@@ -21,7 +21,7 @@ class HardhatTest {
             "local" -> HardHatNodeConfig.local()
             else -> throw IllegalArgumentException("Unsupported new nodeMode: $nodeMode, please update the test")
         }
-        val connection = HardhatNode.fork(config)
+        val connection = HardhatNode.start(config)
 
         // given precondition: given container is running
         var container = defaultDockerClient.listContainersCmd().exec()

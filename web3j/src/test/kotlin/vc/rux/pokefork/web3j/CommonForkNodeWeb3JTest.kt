@@ -13,17 +13,19 @@ import org.web3j.protocol.core.DefaultBlockParameterName.LATEST
 import org.web3j.tx.gas.DefaultGasProvider
 import vc.rux.pokefork.NodeMode
 import vc.rux.pokefork.errors.PokeForkError
-import vc.rux.pokefork.hardhat.HardHatNodeConfig
-import vc.rux.pokefork.hardhat.HardhatNode
+import vc.rux.pokefork.hardhat.IEthereumLikeNode
 import vc.rux.pokefork.web3j.utils.toHexStringSuffixed
 import java.math.BigDecimal
 import java.math.BigDecimal.TEN
 import java.math.BigInteger
+import kotlin.text.RegexOption.IGNORE_CASE
 
-class Web3JNodeTest {
-    private lateinit var fork: HardhatNode
-    
-    private val config = HardHatNodeConfig.fork("https://rpc.ankr.com/eth", 1)
+abstract class CommonForkNodeWeb3JTest {
+    protected lateinit var fork: IEthereumLikeNode
+    abstract fun forkImplementationFactory(mode: NodeMode): IEthereumLikeNode
+
+    fun defaultMainnetFork(): IEthereumLikeNode =
+        forkImplementationFactory(NodeMode.Fork(MAINNET_RPC, 1))
 
     @AfterEach
     fun afterEach() {
@@ -31,12 +33,11 @@ class Web3JNodeTest {
             fork.stop()
     }
 
-
     @CsvSource(value = ["18100000,0.208933821146944046", "15000000,321495.8128334608039745"])
     @ParameterizedTest(name = "forkBlock changes blocks - blockNumber: {0}, expectedBalance: {1}")
     fun `forkBlock changes blocks`(blockNumber: Long, expectedBalance: BigDecimal) {
         // given
-        fork = HardhatNode.start(config)
+        val fork = defaultMainnetFork()
         val web3 = LocalWeb3jNode.from(fork)
 
         // when
@@ -50,7 +51,7 @@ class Web3JNodeTest {
     @Test
     fun `chainId is set to the required one `() {
         // given
-        fork = HardhatNode.start(config.copy(NodeMode.Fork("https://rpc.ankr.com/eth", 42)))
+        fork = forkImplementationFactory(NodeMode.Fork(MAINNET_RPC, 42))
 
         // when
         val web3 = LocalWeb3jNode.from(fork)
@@ -63,7 +64,7 @@ class Web3JNodeTest {
     @Test
     fun `when forked, the block number must be greater than 0`() {
         // given
-        fork = HardhatNode.start(config)
+        fork = defaultMainnetFork()
         val web3 = LocalWeb3jNode.from(fork)
 
         // when and then
@@ -74,7 +75,7 @@ class Web3JNodeTest {
     @Test
     fun `can mine blocks`() {
         // given
-        fork = HardhatNode.start(config)
+        fork = defaultMainnetFork()
         val web3 = LocalWeb3jNode.from(fork)
         val bnBeforeMine = web3.ethBlockNumber().send().blockNumber.toLong()
         println(bnBeforeMine)
@@ -90,7 +91,7 @@ class Web3JNodeTest {
     @Test
     fun `setBalance can set balance in forked network`() {
         // given
-        fork = HardhatNode.start(config)
+        fork = defaultMainnetFork()
         val web3 = LocalWeb3jNode.from(fork)
         val balanceBefore = web3.ethGetBalance(VITALIK_WALLET, LATEST).send().balance
 
@@ -112,7 +113,7 @@ class Web3JNodeTest {
     @Test
     fun `setStorageAt can change the token name`() {
         // given
-        fork = HardhatNode.start(config)
+        fork = defaultMainnetFork()
         val web3 = LocalWeb3jNode.from(fork)
 
         val ust = ERC20.load(UST_TOKEN, web3, randomCredentials, DefaultGasProvider());
@@ -135,7 +136,7 @@ class Web3JNodeTest {
     @Test
     fun `setNextBlockBaseFeePerGas can set base fee per gas`() {
         // given
-        fork = HardhatNode.start(config)
+        fork = defaultMainnetFork()
         val web3 = LocalWeb3jNode.from(fork)
 
         // when
@@ -150,7 +151,7 @@ class Web3JNodeTest {
     @Test
     fun `setBalance throws exception if bad params passed`() {
         // given
-        fork = HardhatNode.start(config)
+        fork = defaultMainnetFork()
         val web3 = LocalWeb3jNode.from(fork)
 
         // when and then
@@ -160,7 +161,7 @@ class Web3JNodeTest {
         assertThat(error)
             .isInstanceOf<PokeForkRpcCallError>()
             .transform { it.error.message }
-            .contains("invalid value", ignoreCase = true)
+            .containsMatch("(invalid value)|(invalid length)".toRegex(IGNORE_CASE)) // hardhat returns '..invalid value..', anvil - '..invalid length..'
     }
 
 

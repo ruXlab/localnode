@@ -4,7 +4,7 @@ import vc.rux.pokefork.hardhat.HardHatNodeConfig
 import vc.rux.pokefork.hardhat.HardhatNode
 
 fun main() {
-    val hhFork = HardhatNode.fork(
+    val hhFork = HardhatNode.start(
         HardHatNodeConfig.fork(
             "https://rpc.ankr.com/eth",
         )
