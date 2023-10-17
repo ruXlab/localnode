@@ -32,4 +32,11 @@ interface ILocalNode {
      * @throws IllegalArgumentException if offset is greater than 32 bytes or negative
      */
     fun setStorageAt(destination: String, offset: BigInteger, value: BigInteger)
+
+    /**
+     * Impersonates the specified EOA
+     * @param address EOA address to impersonate
+     */
+    fun impersonateAccount(address: String)
+    fun stopImpersonatingAccount(address: String)
 }

@@ -73,6 +73,16 @@ class LocalWeb3jNode(
         )
     }
 
+    override fun impersonateAccount(address: String) {
+        log.info("impersonateAccount: {}", address)
+        sendRpcCallAndCheckResponse("hardhat_impersonateAccount", listOf(address))
+    }
+
+    override fun stopImpersonatingAccount(address: String) {
+        log.info("stopImpersonatingAccount: {}", address)
+        sendRpcCallAndCheckResponse("hardhat_stopImpersonatingAccount", listOf(address))
+    }
+
     /**
      * Helper method; reduces boilerplate
      */
