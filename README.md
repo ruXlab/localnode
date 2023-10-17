@@ -27,13 +27,15 @@ to participate in the EVM network space.
 |                 `forkBlock` |     ✅      |        ✅         |
 | `setNextBlockBaseFeePerGas` |     ✅      |        ✅         |
 |              `setStorageAt` |     ✅      |        ✅         |
+|        `impersonateAccount` |     ✅      |        ✅         |
+|  `stopImpersonatingAccount` |     ✅      |        ✅         |
 
 ## Goals
 
 Have a neat and simple interface to the local hardhat or anvil node from your Java/Kotlin/Scala code. As simple as:
 
 ```kotlin
-  // start node in fork mode
+  // start local node in fork mode
   val node = HardhatNode.fork(config)
   val node = AnvilNode.fork(config)
 
@@ -43,6 +45,10 @@ Have a neat and simple interface to the local hardhat or anvil node from your Ja
   web3.forkBlock(blockNumber)
   web3.mine(42)
   web3.setBalance(MY_WALLET, UNICORN_DOLLARS)
+
+  web3.impersonateAccount(HONEYPOT)
+  . . .
+  web3.stopImpersonatingAccount(HONEYPOT)
 ```
 
 Seriously, Java devs deserve it.

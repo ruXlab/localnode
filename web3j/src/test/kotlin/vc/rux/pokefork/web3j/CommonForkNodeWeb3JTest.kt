@@ -10,6 +10,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.web3j.contracts.eip20.generated.ERC20
 import org.web3j.protocol.core.DefaultBlockParameterName.LATEST
+import org.web3j.protocol.core.methods.request.Transaction
 import org.web3j.tx.gas.DefaultGasProvider
 import vc.rux.pokefork.NodeMode
 import vc.rux.pokefork.errors.PokeForkError
@@ -118,7 +119,7 @@ abstract class CommonForkNodeWeb3JTest {
 
         val ust = ERC20.load(UST_TOKEN, web3, randomCredentials, DefaultGasProvider());
         val newName = "UnSTablecoin"
-        val newNameInMemoryLayout = run { // let's do low level string formation
+        val newNameInMemoryLayout = run { // let's play with low level string formation here
             val nameAsHexAlignedLeft = BigInteger(newName.toByteArray()).toHexStringSuffixed(32).drop(2)
             BigInteger(nameAsHexAlignedLeft, 16).or(newName.length.toBigInteger() * BigInteger.TWO)
         }
@@ -164,10 +165,55 @@ abstract class CommonForkNodeWeb3JTest {
             .containsMatch("(invalid value)|(invalid length)".toRegex(IGNORE_CASE)) // hardhat returns '..invalid value..', anvil - '..invalid length..'
     }
 
+    @Test
+    fun `impersonateAccount works`() {
+        // given
+        fork = defaultMainnetFork()
+        val web3 = LocalWeb3jNode.from(fork)
+        val sendAllEthTx = formSendEthTx(web3)
 
+        // when
+        web3.impersonateAccount(VITALIK_WALLET)
+        web3.ethSendTransaction(sendAllEthTx).send().throwIfErrored()
+
+        // then
+        val newBalance = web3.ethGetBalance(VITALIK_WALLET, LATEST).send().balance
+        assertThat(newBalance).isZero()
+    }
+
+    @Test
+    fun `stopImpersonatingAccount works`() {
+        // given
+        fork = defaultMainnetFork()
+        val web3 = LocalWeb3jNode.from(fork)
+        web3.impersonateAccount(VITALIK_WALLET)
+
+        // when
+        web3.stopImpersonatingAccount(VITALIK_WALLET)
+        val error = assertThrows<PokeForkError> {
+            web3.ethSendTransaction(formSendEthTx(web3)).send().throwIfErrored()
+        }
+
+        // then
+        assertThat(error)
+            .isInstanceOf<PokeForkRpcCallError>()
+            .transform { it.error.message }
+            .containsMatch("(unknown account)|(sender account not recognized)|(no signer available)".toRegex(IGNORE_CASE))
+    }
+
+    private fun formSendEthTx(web3: LocalWeb3jNode): Transaction {
+        val nonce = web3.ethGetTransactionCount(VITALIK_WALLET, LATEST).send().transactionCount
+        val ethBalance = web3.ethGetBalance(VITALIK_WALLET, LATEST).send().balance
+        val gasPrice = web3.ethGasPrice().send().gasPrice
+        return Transaction.createEtherTransaction(
+            VITALIK_WALLET, nonce, gasPrice, 21_000.toBigInteger(), ZERO_ADDRESS, ethBalance - gasPrice * 21_000.toBigInteger()
+        )
+    }
+    
     companion object {
         const val VITALIK_WALLET = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
         const val FTX_WALLET = "0x2FAF487A4414Fe77e2327F0bf4AE2a264a776AD2"
         const val UST_TOKEN = "0xa47c8bf37f92abed4a126bda807a7b7498661acd"
+        const val ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
     }
 }
