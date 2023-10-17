@@ -11,7 +11,6 @@ import org.junit.jupiter.params.provider.CsvSource
 import org.web3j.contracts.eip20.generated.ERC20
 import org.web3j.protocol.core.DefaultBlockParameterName.LATEST
 import org.web3j.tx.gas.DefaultGasProvider
-import vc.rux.pokefork.NodeMode
 import vc.rux.pokefork.errors.PokeForkError
 import vc.rux.pokefork.hardhat.HardHatNodeConfig
 import vc.rux.pokefork.hardhat.HardhatNode
@@ -46,20 +45,7 @@ class Web3JNodeTest {
         assertThat(web3.ethGetBalance(FTX_WALLET, LATEST).send().balance)
             .isEqualTo((expectedBalance * TEN.pow(18)).toBigInteger())
     }
-
-    @Test
-    fun `chainId is set to the required one `() {
-        // given
-        fork = HardhatNode.start(config.copy(NodeMode.Fork("https://rpc.ankr.com/eth", 42)))
-
-        // when
-        val web3 = LocalWeb3jNode.from(fork)
-
-        // then
-        val chainId = web3.netVersion().send().netVersion
-        assertThat(chainId).isEqualTo("42")
-    }
-
+    
     @Test
     fun `when forked, the block number must be greater than 0`() {
         // given

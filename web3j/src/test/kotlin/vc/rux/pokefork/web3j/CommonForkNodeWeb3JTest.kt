@@ -37,7 +37,7 @@ abstract class CommonForkNodeWeb3JTest {
     @ParameterizedTest(name = "forkBlock changes blocks - blockNumber: {0}, expectedBalance: {1}")
     fun `forkBlock changes blocks`(blockNumber: Long, expectedBalance: BigDecimal) {
         // given
-        val fork = defaultMainnetFork()
+        fork = defaultMainnetFork()
         val web3 = LocalWeb3jNode.from(fork)
 
         // when

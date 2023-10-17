@@ -57,8 +57,8 @@ Seriously, Java devs deserve it.
   Hardhat node and Foundry's Anvil, both are popular development local nodes for the Ethereum developers.
 
 - **Docker Container**: PokeFork runs local node **inside** docker container. This removes headache of installing
-  and configuring local node on your machine, not to mention allows to concurrent run of multiple nodes without
-  port conflicts.
+  and configuring local node on your machine, greatly improving portability. It also allows concurrent run
+  of multiple nodes without ports conflict.
 
 - **Network Diversity**: Ethereum is _still_ the Mainnet, the old and very important guy. 
   It would be naive to say that in 2023 it's the only blockchain that matters.
