@@ -15,10 +15,11 @@ class PokeForkRpcCallError : PokeForkError {
 
 }
 
-internal fun Response<*>.throwIfErrored() {
+internal fun <T> Response<T>.throwIfErrored(): Response<T> {
     if (hasError()) {
         throw PokeForkRpcCallError(error)
     }
+    return this
 }
 internal fun Response<*>.throwIfResultIsNotTrue() {
     if (result != null && result != "true") {

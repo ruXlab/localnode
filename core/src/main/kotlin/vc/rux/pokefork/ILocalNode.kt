@@ -39,4 +39,6 @@ interface ILocalNode {
      */
     fun impersonateAccount(address: String)
     fun stopImpersonatingAccount(address: String)
+    fun chainSnapshot(): String
+    fun chainRevert(snapshotId: String)
 }

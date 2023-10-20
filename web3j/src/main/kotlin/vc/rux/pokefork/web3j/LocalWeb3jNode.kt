@@ -83,6 +83,21 @@ class LocalWeb3jNode(
         sendRpcCallAndCheckResponse("hardhat_stopImpersonatingAccount", listOf(address))
     }
 
+    override fun chainSnapshot(): String {
+        log.info("chainSnapshot")
+        val resp = httpService.send(
+            Request("evm_snapshot", emptyList<Any>(), httpService, HardhatStringResponse::class.java),
+            HardhatStringResponse::class.java
+        )
+
+        return resp.throwIfErrored().result
+    }
+
+    override fun chainRevert(snapshotId: String) {
+        log.info("chainRevert: rolling back blockchain state to snapshot $snapshotId")
+        sendRpcCallAndCheckResponse("evm_revert", listOf(snapshotId))
+    }
+
     /**
      * Helper method; reduces boilerplate
      */

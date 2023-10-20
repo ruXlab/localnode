@@ -20,15 +20,16 @@ to participate in the EVM network space.
 
 ## Supported methods
 
-|           Local node method | HardHat 👷 | Foundry Anvil ⚒️ |
-|----------------------------:|:----------:|:----------------:|
-|                      `mine` |     ✅      |        ✅         |
-|                `setBalance` |     ✅      |        ✅         |
-|                 `forkBlock` |     ✅      |        ✅         |
-| `setNextBlockBaseFeePerGas` |     ✅      |        ✅         |
-|              `setStorageAt` |     ✅      |        ✅         |
-|        `impersonateAccount` |     ✅      |        ✅         |
-|  `stopImpersonatingAccount` |     ✅      |        ✅         |
+|               Local node method | HardHat 👷 | Foundry Anvil ⚒️ |
+|--------------------------------:|:----------:|:----------------:|
+|                          `mine` |     ✅      |        ✅         |
+|                    `setBalance` |     ✅      |        ✅         |
+|                     `forkBlock` |     ✅      |        ✅         |
+|     `setNextBlockBaseFeePerGas` |     ✅      |        ✅         |
+|                  `setStorageAt` |     ✅      |        ✅         |
+|            `impersonateAccount` |     ✅      |        ✅         |
+|      `stopImpersonatingAccount` |     ✅      |        ✅         |
+| `chainSnapshot` / `chainRevert` |     ✅      |        ✅         |
 
 ## Goals
 

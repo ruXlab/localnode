@@ -10,6 +10,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.web3j.contracts.eip20.generated.ERC20
 import org.web3j.protocol.core.DefaultBlockParameterName.LATEST
+import org.web3j.protocol.core.Ethereum
 import org.web3j.protocol.core.methods.request.Transaction
 import org.web3j.tx.gas.DefaultGasProvider
 import vc.rux.pokefork.NodeMode
@@ -19,6 +20,7 @@ import vc.rux.pokefork.web3j.utils.toHexStringSuffixed
 import java.math.BigDecimal
 import java.math.BigDecimal.TEN
 import java.math.BigInteger
+import java.math.BigInteger.TWO
 import kotlin.text.RegexOption.IGNORE_CASE
 
 abstract class CommonForkNodeWeb3JTest {
@@ -121,7 +123,7 @@ abstract class CommonForkNodeWeb3JTest {
         val newName = "UnSTablecoin"
         val newNameInMemoryLayout = run { // let's play with low level string formation here
             val nameAsHexAlignedLeft = BigInteger(newName.toByteArray()).toHexStringSuffixed(32).drop(2)
-            BigInteger(nameAsHexAlignedLeft, 16).or(newName.length.toBigInteger() * BigInteger.TWO)
+            BigInteger(nameAsHexAlignedLeft, 16).or(newName.length.toBigInteger() * TWO)
         }
         // precondition
         assertThat(ust.symbol().send()).isEqualTo("UST")
@@ -201,19 +203,50 @@ abstract class CommonForkNodeWeb3JTest {
             .containsMatch("(unknown account)|(sender account not recognized)|(no signer available)".toRegex(IGNORE_CASE))
     }
 
-    private fun formSendEthTx(web3: LocalWeb3jNode): Transaction {
-        val nonce = web3.ethGetTransactionCount(VITALIK_WALLET, LATEST).send().transactionCount
-        val ethBalance = web3.ethGetBalance(VITALIK_WALLET, LATEST).send().balance
+    @Test
+    fun `can take snapshot and restore it`() {
+        // given
+        fork = defaultMainnetFork()
+        val web3 = LocalWeb3jNode.from(fork)
+        web3.impersonateAccount(A_ADDRESS)
+        web3.setBalance(A_ADDRESS, ONE_ETH)
+        val balanceBeforeFirstCheckpoint = web3.ethBalanceOf(A_ADDRESS)
+
+        // when
+        val snapshotId = web3.chainSnapshot()
+        web3.ethSendTransaction(
+            formSendEthTx(web3, from = A_ADDRESS, amount =  balanceBeforeFirstCheckpoint  / TWO)
+        ).send().throwIfErrored()
+        assertThat(web3.ethBalanceOf(A_ADDRESS)).isLessThan(balanceBeforeFirstCheckpoint)
+
+        // and when
+        web3.chainRevert(snapshotId)
+
+        // then
+        assertThat(web3.ethBalanceOf(A_ADDRESS)).isEqualTo(balanceBeforeFirstCheckpoint)
+    }
+
+
+    private fun formSendEthTx(
+        web3: LocalWeb3jNode, from: String = VITALIK_WALLET, destination: String = ZERO_ADDRESS, amount: BigInteger? = null
+    ): Transaction {
+        val nonce = web3.ethGetTransactionCount(from, LATEST).send().transactionCount
+        val ethBalance = web3.ethBalanceOf(from)
         val gasPrice = web3.ethGasPrice().send().gasPrice
         return Transaction.createEtherTransaction(
-            VITALIK_WALLET, nonce, gasPrice, 21_000.toBigInteger(), ZERO_ADDRESS, ethBalance - gasPrice * 21_000.toBigInteger()
+            from, nonce, gasPrice, 21_000.toBigInteger(), destination,
+            amount ?: (ethBalance - gasPrice * 21_000.toBigInteger())
         )
     }
+
+    private fun Ethereum.ethBalanceOf(address: String): BigInteger =
+        this.ethGetBalance(address, LATEST).send().balance
     
     companion object {
         const val VITALIK_WALLET = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
         const val FTX_WALLET = "0x2FAF487A4414Fe77e2327F0bf4AE2a264a776AD2"
         const val UST_TOKEN = "0xa47c8bf37f92abed4a126bda807a7b7498661acd"
         const val ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
+        const val A_ADDRESS = "0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
     }
 }
