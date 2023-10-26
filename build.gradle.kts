@@ -7,14 +7,19 @@ plugins {
 group = "vc.rux.pokefork"
 version = "0.0-SNAPSHOT"
 
+allprojects {
+    group = "vc.rux.pokefork"
+}
 
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            groupId = "vc.rux.pokefork"
-            artifactId = "pokefork"
+subprojects {
+    publishing {
+        publications {
+            create<MavenPublication>("maven") {
+                groupId = project.group.toString()
+                artifactId = project.name
 
-            from(components["java"])
+                from(components["java"])
+            }
         }
     }
 }

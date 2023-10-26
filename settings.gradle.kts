@@ -47,3 +47,4 @@ dependencyResolutionManagement {
 }
 include("web3j")
 include("core")
+include("examples")
