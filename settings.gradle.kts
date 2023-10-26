@@ -1,3 +1,5 @@
+import java.net.URI
+
 pluginManagement {
     repositories {
         mavenCentral()
@@ -13,8 +15,10 @@ rootProject.name = "pokefork"
 
 // create library versions and bundles
 dependencyResolutionManagement {
+    repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
     repositories {
         mavenCentral()
+        maven { url = URI("https://jitpack.io") }
     }
     versionCatalogs {
         create("libs") {
