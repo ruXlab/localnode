@@ -1,7 +1,10 @@
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
-    kotlin("jvm") 
+    kotlin("jvm")
+    id("publication")
+    `maven-publish`
+    signing
 }
 
 group = "vc.rux.pokefork"
@@ -9,11 +12,10 @@ version = "0.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
-    google()
 }
 
 dependencies {
-    implementation(project(":core"))
+    api(project(":core"))
     implementation(libs.web3j)
     implementation(libs.bundles.logging)
 
@@ -33,3 +35,15 @@ tasks.test {
         )
     }
 }
+
+kotlin {
+    
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+
+

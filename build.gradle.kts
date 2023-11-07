@@ -1,6 +1,6 @@
 plugins {
-    kotlin("jvm") version "1.9.0" apply false
-    application
+    kotlin("jvm") version "1.9.20" apply false
+    id("publication")
 }
 
 group = "vc.rux.pokefork"

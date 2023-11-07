@@ -3,6 +3,7 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
+    includeBuild("plugins")
 }
 
 plugins {
@@ -42,5 +43,7 @@ dependencyResolutionManagement {
         }
     }
 }
+
 include("web3j")
 include("core")
+include("examples")

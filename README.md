@@ -1,8 +1,8 @@
 # 🍴 PokeFork: Seamless integration of Hardhat and Foundry Anvil with your Java/Kotlin app
 
-![build status](https://github.com/ruXlab/pokefork/actions/workflows/tests.yml/badge.svg)
+[![build status](https://github.com/ruXlab/pokefork/actions/workflows/tests.yml/badge.svg)](https://github.com/ruXlab/pokefork/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
+[![Maven Central](https://img.shields.io/maven-central/v/vc.rux.pokefork/ktx-module.svg)](https://search.maven.org/artifact/vc.rux.pokefork/web3j)
 
 
 PokeFork is an open-source library project designed to empower
@@ -72,15 +72,14 @@ Seriously, Java devs deserve it.
 
 ## Getting Started
 
-Clone and build the PokeFork project:
+Add dependency to your project:
 
-```bash
-git clone 
-cd pokefork
-./gradlew test build
+```kotlin
+implementation("vc.rux.pokefork:web3j:0.1.0")
+implementation("org.web3j:core:4.10.3")
 ```
 
-TBD
+And off you go! Check [examples](examples) folder to get idea how to use this library.
 
 ## Contributing
 

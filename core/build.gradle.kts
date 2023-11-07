@@ -2,9 +2,10 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     kotlin("jvm")
+    id("publication")
 }
 
-group = "vc.rux.pokefork.core"
+group = "vc.rux.pokefork"
 version = "0.0-SNAPSHOT"
 
 repositories {
@@ -21,7 +22,12 @@ dependencies {
     testImplementation(testlibs.junit.params)
     testRuntimeOnly(testlibs.junit.engine)
     testImplementation(testlibs.assertk)
+}
 
+
+java {
+    withJavadocJar()
+    withSourcesJar()
 }
 
 
