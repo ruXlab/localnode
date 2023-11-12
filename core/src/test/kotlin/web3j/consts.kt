@@ -1,4 +1,4 @@
-package vc.rux.pokefork.web3j
+package web3j
 
 import java.math.BigInteger.TEN
 

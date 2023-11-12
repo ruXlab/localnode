@@ -110,10 +110,14 @@ publishing {
 signing {
     val signingKey = project.ext["signing.key"] as? String
     val signingPassword = project.ext["signing.password"] as? String
-    if (signingKey == null || signingPassword == null) return@signing
+    val keyFilePath = project.ext["signing.secretKeyRingFile"] as? String
 
-    useInMemoryPgpKeys(signingKey, signingPassword)
-    sign(publishing.publications)
+    if (signingKey != null && signingPassword != null && keyFilePath != null) {
+        val keyContent = File(keyFilePath).readText()
+
+        useInMemoryPgpKeys(signingKey, keyContent, signingPassword)
+        sign(publishing.publications)
+    }
 }
 
 // TODO: remove after https://youtrack.jetbrains.com/issue/KT-46466 is fixed

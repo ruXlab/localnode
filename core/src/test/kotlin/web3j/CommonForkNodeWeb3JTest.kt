@@ -1,4 +1,4 @@
-package vc.rux.pokefork.web3j
+package web3j
 
 import assertk.all
 import assertk.assertThat
@@ -16,6 +16,9 @@ import org.web3j.tx.gas.DefaultGasProvider
 import vc.rux.pokefork.NodeMode
 import vc.rux.pokefork.errors.PokeForkError
 import vc.rux.pokefork.hardhat.IEthereumLikeNode
+import vc.rux.pokefork.web3j.LocalWeb3jNode
+import vc.rux.pokefork.web3j.PokeForkRpcCallError
+import vc.rux.pokefork.web3j.throwIfErrored
 import vc.rux.pokefork.web3j.utils.toHexStringSuffixed
 import java.math.BigDecimal
 import java.math.BigDecimal.TEN

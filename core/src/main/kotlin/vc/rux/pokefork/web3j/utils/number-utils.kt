@@ -1,6 +1,5 @@
 package vc.rux.pokefork.web3j.utils
 
-import org.web3j.utils.Numeric
 import java.math.BigInteger
 
 

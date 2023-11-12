@@ -1,8 +1,8 @@
-package vc.rux.pokefork.web3j
+package web3j
 
 import vc.rux.pokefork.NodeMode
-import vc.rux.pokefork.hardhat.HardHatNodeConfig
-import vc.rux.pokefork.hardhat.HardhatNode
+import vc.rux.pokefork.anvil.AnvilNode
+import vc.rux.pokefork.anvil.AnvilNodeConfig
 
 /**
  * Since junit5 doesn't support tests with multiple paramterised parameters in constructor and
@@ -10,9 +10,9 @@ import vc.rux.pokefork.hardhat.HardhatNode
  *
  * While this approach works, it reduces readability, so feel free to make PR to address this issue.
  */
-class HardhatForkWeb3Test : CommonForkNodeWeb3JTest() {
-    override fun forkImplementationFactory(mode: NodeMode): HardhatNode =
-        HardhatNode.start(
-            HardHatNodeConfig(nodeMode = mode)
+class AnvilForkWeb3Test : CommonForkNodeWeb3JTest() {
+    override fun forkImplementationFactory(mode: NodeMode): AnvilNode =
+        AnvilNode.start(
+            AnvilNodeConfig(nodeMode = mode)
         )
 }
