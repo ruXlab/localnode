@@ -3,5 +3,5 @@ plugins {
     id("publication")
 }
 
-group = "vc.rux.pokefork"
+group = "vc.rux.localnode"
 version = "0.0-SNAPSHOT"

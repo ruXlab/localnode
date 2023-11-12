@@ -7,7 +7,7 @@ plugins {
     signing
 }
 
-group = "vc.rux.pokefork"
+group = "vc.rux.localnode"
 version = "0.0-SNAPSHOT"
 
 repositories {
@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-    api(project(":core"))
+    api(project(":localnode"))
     implementation(libs.web3j)
     implementation(libs.bundles.logging)
 
@@ -51,7 +51,7 @@ tasks.jar {
 
     // Include the content of the :core module in the JAR
     from(configurations.runtimeClasspath.get()
-        .filter { it.absolutePath.contains("vc/rux/pokefork/core") })
+        .filter { it.absolutePath.contains("vc/rux/localnode/core") })
 //    configurations.runtimeClasspath.get().forEach {
 //        println("runtimeClasspath: $it")
 //    }
@@ -67,5 +67,5 @@ tasks.jar {
 
 
     from(configurations.runtimeClasspath.get()
-        .filter { it.absolutePath.contains("vc/rux/pokefork") && !it.absolutePath.contains("examples/") })
+        .filter { it.absolutePath.contains("vc/rux/localnode") && !it.absolutePath.contains("examples/") })
 }

@@ -2,7 +2,7 @@ plugins {
     kotlin("jvm")
 }
 
-group = "vc.rux.pokefork.examples"
+group = "vc.rux.localnode.examples"
 version = "0.0-SNAPSHOT"
 
 repositories {
@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    implementation("vc.rux.pokefork:web3j:0.1.0")
+    implementation("vc.rux.localnode:web3j:0.1.0")
     implementation("org.web3j:core:4.10.3")
 }
 
