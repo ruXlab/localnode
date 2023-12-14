@@ -41,6 +41,5 @@ dependencyResolutionManagement {
     }
 }
 
-include("web3j")
 include("localnode")
 include("examples")

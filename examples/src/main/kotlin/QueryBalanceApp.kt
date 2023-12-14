@@ -3,9 +3,9 @@ import misc.archiveNodeUrl
 import org.web3j.protocol.core.DefaultBlockParameter
 import org.web3j.utils.Convert.Unit
 import org.web3j.utils.Convert.fromWei
-import vc.rux.pokefork.anvil.AnvilNode
-import vc.rux.pokefork.anvil.AnvilNodeConfig
-import vc.rux.pokefork.web3j.LocalWeb3jNode
+import vc.rux.localnode.anvil.AnvilNode
+import vc.rux.localnode.anvil.AnvilNodeConfig
+import vc.rux.localnode.web3j.LocalWeb3jNode
 
 object QueryBalanceApp {
     @JvmStatic

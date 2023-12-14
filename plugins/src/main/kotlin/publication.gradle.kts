@@ -108,9 +108,10 @@ publishing {
 }
 
 signing {
-    val signingKey = project.ext["signing.key"] as? String
-    val signingPassword = project.ext["signing.password"] as? String
-    val keyFilePath = project.ext["signing.secretKeyRingFile"] as? String
+    fun getProp(name: String) = runCatching { project.ext[name] }.getOrNull() as? String
+    val signingKey = getProp("signing.keyId")
+    val signingPassword = getProp("signing.password")
+    val keyFilePath = getProp("signing.secretKeyRingFile")
 
     if (signingKey != null && signingPassword != null && keyFilePath != null) {
         val keyContent = File(keyFilePath).readText()

@@ -22,7 +22,6 @@
             <option value="$PROJECT_DIR$/examples" />
             <option value="$PROJECT_DIR$/localnode" />
             <option value="$PROJECT_DIR$/plugins" />
-            <option value="$PROJECT_DIR$/web3j" />
           </set>
         </option>
       </GradleProjectSettings>

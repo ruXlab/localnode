@@ -1,8 +1,8 @@
 # 🍴 LocalNode: get Hardhat and Foundry Anvil integrated in your Java/Kotlin app
 
-[![build status](https://github.com/ruXlab/pokefork/actions/workflows/tests.yml/badge.svg)](https://github.com/ruXlab/pokefork/actions)
+[![build status](https://github.com/ruXlab/localnode/actions/workflows/tests.yml/badge.svg)](https://github.com/ruXlab/localnode/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Maven Central](https://img.shields.io/maven-central/v/vc.rux.pokefork/ktx-module.svg)](https://search.maven.org/artifact/vc.rux.pokefork/web3j)
+[![Maven Central](https://img.shields.io/maven-central/v/vc.rux.pokefork/ktx-module.svg)](https://search.maven.org/artifact/vc.rux.localnode/localnode)
 
 
 LocalNode allows to run a local development or forked node of the Ethereum-like network
