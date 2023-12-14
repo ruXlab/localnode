@@ -43,4 +43,7 @@ tasks.test {
             TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED
         )
     }
+    System.getenv("TEST_CONCURRENCY")?.toIntOrNull()?.let {
+        maxParallelForks = it
+    }
 }
