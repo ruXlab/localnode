@@ -3,13 +3,11 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
+    includeBuild("plugins")
 }
 
-plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "0.5.0"
-}
 
-rootProject.name = "pokefork"
+rootProject.name = "localnode"
 
 // create library versions and bundles
 dependencyResolutionManagement {
@@ -42,5 +40,6 @@ dependencyResolutionManagement {
         }
     }
 }
-include("web3j")
-include("core")
+
+include("localnode")
+include("examples")

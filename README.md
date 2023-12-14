@@ -1,14 +1,15 @@
-# 🍴 PokeFork: Seamless integration of Hardhat and Foundry Anvil with your Java/Kotlin app
+# 🍴 LocalNode: get Hardhat and Foundry Anvil integrated in your Java/Kotlin app
 
-![build status](https://github.com/ruXlab/pokefork/actions/workflows/tests.yml/badge.svg)
+[![build status](https://github.com/ruXlab/localnode/actions/workflows/tests.yml/badge.svg)](https://github.com/ruXlab/localnode/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Maven Central](https://img.shields.io/maven-central/v/vc.rux.pokefork/ktx-module.svg)](https://search.maven.org/artifact/vc.rux.localnode/localnode)
 
 
+LocalNode allows to run a local development or forked node of the Ethereum-like network
+using **Hardhat or Foundry Anvil** and interact with it from your Java/Kotlin/Scala code. 
+Thanks to docker there won't be a port conflict and you can run multiple nodes at the same time. 
 
-PokeFork is an open-source library project designed to empower
-developers working with Ethereum Virtual Machine (EVM) based networks.
-It allows to run a local development or forked node of the Ethereum-like network 
-using **Hardhat or Foundry Anvil** and interact with it from your Java/Kotlin/Scala code.
+Developer gets full control over the management of the local node via the extended (see the table below) web3j interface.
 
 ## Motivation
 
@@ -72,15 +73,14 @@ Seriously, Java devs deserve it.
 
 ## Getting Started
 
-Clone and build the PokeFork project:
+Add dependency to your project:
 
-```bash
-git clone 
-cd pokefork
-./gradlew test build
+```kotlin
+implementation("vc.rux.localnodee:web3j:0.1.0")
+implementation("org.web3j:core:4.10.3")
 ```
 
-TBD
+And off you go! Check [examples](examples) folder to get idea how to use this library.
 
 ## Contributing
 
@@ -98,10 +98,6 @@ EVM network interactions.
 Seriously, it's clear that number of bad actors in blockchain
 space is crazy. Trust no one.
 
-## Punning Around
-
-We couldn't resist the opportunity for some wordplay with "PokeFork."
-Just like a fork in the road, we're here to help you choose the
-path that leads to success in EVM network development.
+------------------------
 
 Happy forking!
